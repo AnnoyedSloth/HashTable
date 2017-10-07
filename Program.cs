@@ -17,6 +17,7 @@ namespace HashTableNS
             _key = key;
             _value = value;
         }
+        ~Node() { }
         public string GetValue()
         {
             return _value;
@@ -59,7 +60,7 @@ namespace HashTableNS
         {
             string key, value;
 
-            Console.WriteLine("You've chose the Insert option.");
+            Console.WriteLine("You've chose Insert option.");
             Console.Write("Key : ");
             key = Console.ReadLine();
             Console.Write("Value : ");
@@ -134,7 +135,7 @@ namespace HashTableNS
 
         public void DeleteHashData()
         {
-            Console.Write("You've chose the Deleting option. Please write key to delete : ");
+            Console.Write("You've chose Deleting option. Please write key to delete : ");
             string delKey = Console.ReadLine();
             for (int a = 0; a < 100; a++)
             {
@@ -158,6 +159,7 @@ namespace HashTableNS
             }
         }
 
+        //Too much simple hashing algorithm
         public int Hashing(string key)
         {
             int hashKey;
@@ -176,18 +178,43 @@ namespace HashTableNS
         {
             for (int a = 0; a < 100; a++)
             {
+                //Print only in case of List exist
                 if (!(_hashList[a] == null))
                 {
-                    Console.Write($"Hashcode[{a}] ");
-                    Program.ListPrint(_hashList[a]);
+                    if (!(_hashList[a]._head == null))
+                    {
+                        Console.Write($"Hashcode[{a}] ");
+                        Program.ListPrint(_hashList[a]);
+                    }
                 }
             }
         }
+
+        public void SearchHashtable()
+        {
+            Console.WriteLine("You've chose Searching option.");
+            Console.Write("Key : ");
+            string key = Console.ReadLine();
+
+            for (int a = 0; a < 100; a++)
+            {
+                //Print only in case of List exist
+                if (!(_hashList[a] == null))
+                {
+                    if (!(_hashList[a]._head == null))
+                    {
+                        Console.Write($"Hashcode[{a}] ");
+                        if (!Program.ListSearch(_hashList[a], key)) Console.WriteLine("No data found");
+                    }
+                }
+            }
+        }
+
         #endregion
 
         class Program
         {
-            #region List Methods
+            #region Methods
             public static bool InsertNode(List list, string key, string value)
             {
                 Node newNode = new Node(key, value);
@@ -222,15 +249,14 @@ namespace HashTableNS
                 // in case of only 1 node exist
                 if (list._head._next == null)
                 {
-                    Console.WriteLine("1 node case called");
                     tempValue = list._head.GetValue();
                     list._head = null;
                     list._cur = null;
                     list._tail = null;
                     list._before = null;
-                    list = null;
                     return tempValue;
                 }
+
                 // in case of list has 2 or more nodes
                 else
                 {
@@ -242,6 +268,7 @@ namespace HashTableNS
                         list._cur = list._before;
                         return tempValue;
                     }
+
                     // in case of deleting node is head
                     else if (list._cur == list._head && list._cur != list._tail)
                     {
@@ -250,6 +277,7 @@ namespace HashTableNS
                         list._cur = list._head;
                         return tempValue;
                     }
+
                     // in case of deleting node is tail
                     else if (list._cur != list._head && list._cur == list._tail)
                     {
@@ -281,6 +309,30 @@ namespace HashTableNS
                 }
             }
 
+            public static bool ListSearch(List list, string key)
+            {
+                int num = 0;
+                if (LFirst(list))
+                {
+                    if (list._cur.GetKey() == key)
+                    {
+                        num++;
+                        Console.Write($"{list._cur.GetValue()} ");
+                    }
+                    while (LNext(list))
+                    {
+                        if (list._cur.GetKey() == key)
+                        {
+                            num++;
+                            Console.Write($"{list._cur.GetValue()} ");
+                        }
+                    }
+                    Console.WriteLine();
+                }
+                if (num == 0) return false;
+                else return true;
+            }
+
             public static bool LFirst(List list)
             {
                 if (list._head == null)
@@ -295,7 +347,7 @@ namespace HashTableNS
 
             public static bool LNext(List list)
             {
-                if (list._cur._next == null)
+                if (list._cur == null || list._cur._next == null)
                 {
                     return false;
                 }
@@ -304,7 +356,6 @@ namespace HashTableNS
                 return true;
             }
             #endregion
-
 
             static void Main(string[] args)
             {
@@ -348,11 +399,13 @@ namespace HashTableNS
                         case 3:
                             HT.DeleteHashData();
                             break;
+                        case 4:
+                            HT.SearchHashtable();
+                            break;
                         case 5:
                             return;
-                            break;
                         default:
-                            Console.WriteLine("You've got to choose something!");
+                            Console.WriteLine("Wrong command. Write valid command.");
                             break;
                     }
                 }
